@@ -1,4 +1,4 @@
 ## ADOFAI Expansion
 An organization that researches and expands the functions of ADOFAI.
 
-[![ADOFAI-JS](https://github-readme-stats.vercel.app/api/pin/?username=ADOFAI-Expansion&repo=ADOFAI-JS)](https://github.com/ADOFAI-Expansion/ADOFAI-JS)
+Some interesting repositories about ADOFAI will appear here, including but not limited to Mod, Patch, Shader, Tool, etc.
