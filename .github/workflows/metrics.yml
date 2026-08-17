@@ -53,21 +53,29 @@ jobs:
 
       - name: Generate contributor graph SVG
         run: |
+          pwd
           docker run --rm \
             -v "$PWD:/work" \
             -w /work \
             -e GITHUB_TOKEN=${{ secrets.METRICS_TOKEN }} \
-            ghcr.io/ewels/contributor-graphs adofaiex
-      - name: Rename to standard name (optional)
-        run: |
-          mv adofaiex.svg contributors.svg 2>/dev/null || true
-          mv adofaiex.html contributors.html 2>/dev/null || true
+            ghcr.io/ewels/contributor-graphs adofaiex 2>&1 | tee output.log
 
-      - name: Commit and push the generated SVG
+      - name: List all files
+        run: |
+          ls -la
+          find . -name "*.svg" -type f
+          cat output.log || echo "No log file"
+
+      - name: Commit and push if files exist
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git pull --rebase origin main || true
-          git add adofaiex.svg adofaiex.html
-          git commit -m "📊 update contributor graph [skip ci]" || echo "No changes to commit"
-          git push
+          if [ -f "adofaiex.svg" ]; then
+            git add adofaiex.svg adofaiex.html
+            git commit -m "📊 update contributor graph [skip ci]" || echo "No changes"
+            git push
+          else
+            echo "SVG file not found, skipping commit"
+            exit 1
+          fi
