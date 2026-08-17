@@ -58,8 +58,8 @@ jobs:
             -w /work \
             -e GITHUB_TOKEN=${{ secrets.METRICS_TOKEN }} \
             ghcr.io/ewels/contributor-graphs adofaiex
-          - name: Rename to standard name (optional)
-          run: |
+      - name: Rename to standard name (optional)
+        run: |
           mv adofaiex.svg contributors.svg 2>/dev/null || true
           mv adofaiex.html contributors.html 2>/dev/null || true
 
