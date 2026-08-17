@@ -1,19 +1,19 @@
-name: Generate Metrics
+name: Generate Metrics & Contributor Graph
 
 on:
   schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+    - cron: '0 0 * * *'          # 每天 UTC 0 点运行
+  workflow_dispatch:              # 允许手动触发
   push:
     branches: ["main"]
 
+permissions:
+  contents: write                 # 允许提交到仓库
+
 jobs:
-  build:
+  metrics:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
-      # 左栏:基础信息 + 组织简介
       - name: Generate Metrics (left)
         uses: lowlighter/metrics@latest
         with:
@@ -26,7 +26,6 @@ jobs:
           plugin_introduction: yes
           plugin_traffic: yes
 
-      # 右栏:语言占比 + 代码行数 + issue/PR 状态
       - name: Generate Metrics (right)
         uses: lowlighter/metrics@latest
         with:
@@ -42,7 +41,27 @@ jobs:
           plugin_lines: yes
           plugin_lines_sections: base
           plugin_followup: yes
-
-          # 组织 Projects 看板(需要指定具体项目,先占位,没有就删掉这三行)
+          # 如需组织 Projects 看板，取消下面三行注释并填好项目
           # plugin_projects: yes
           # plugin_projects_repositories: adofaiex/xxx/projects/1
+
+  contributor-graph:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate contributor graph SVG
+        run: |
+          docker run --rm \
+            -v "$PWD:/work" \
+            -e GITHUB_TOKEN=${{ secrets.METRICS_TOKEN }} \   # 🔥 改用同一个 Token
+            ghcr.io/ewels/contributor-graphs adofaiex
+
+      - name: Commit and push the generated SVG
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add contributors.svg contributors.html
+          git commit -m "📊 update contributor graph [skip ci]" || echo "No changes to commit"
+          git push
