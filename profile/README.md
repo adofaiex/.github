@@ -15,3 +15,5 @@ This is a very casual organization, with no organizational rules.
     </td>
   </tr>
 </table>
+
+![Contributors](https://raw.githubusercontent.com/adofaiex/.github/main/adofaiex.svg)
