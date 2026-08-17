@@ -55,13 +55,18 @@ jobs:
         run: |
           docker run --rm \
             -v "$PWD:/work" \
-            -e GITHUB_TOKEN=${{ secrets.METRICS_TOKEN }} \
-            ghcr.io/ewels/contributor-graphs adofaiex
-
-      - name: Generate contributor graph SVG
-        run: |
-          docker run --rm \
-            -v "$PWD:/work" \
             -w /work \
             -e GITHUB_TOKEN=${{ secrets.METRICS_TOKEN }} \
             ghcr.io/ewels/contributor-graphs adofaiex
+          - name: Rename to standard name (optional)
+          run: |
+          mv adofaiex.svg contributors.svg 2>/dev/null || true
+          mv adofaiex.html contributors.html 2>/dev/null || true
+
+      - name: Commit and push the generated SVG
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add contributors.svg contributors.html 2>/dev/null || echo "No files to add"
+          git commit -m "📊 update contributor graph [skip ci]" || echo "No changes to commit"
+          git push
