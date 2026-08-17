@@ -55,7 +55,7 @@ jobs:
         run: |
           docker run --rm \
             -v "$PWD:/work" \
-            -e GITHUB_TOKEN=${{ secrets.METRICS_TOKEN }} \   # 🔥 改用同一个 Token
+            -e GITHUB_TOKEN=${{ secrets.METRICS_TOKEN }} \
             ghcr.io/ewels/contributor-graphs adofaiex
 
       - name: Commit and push the generated SVG
