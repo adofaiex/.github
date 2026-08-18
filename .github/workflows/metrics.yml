@@ -58,7 +58,7 @@ jobs:
             -v "$PWD:/work" \
             -w /work \
             -e GITHUB_TOKEN=${{ secrets.METRICS_TOKEN }} \
-            ghcr.io/ewels/contributor-graphs adofaiex 2>&1 | tee output.log
+            ghcr.io/ewels/contributor-graphs adofaiex --sort commits 2>&1 | tee output.log
 
       - name: List all files
         run: |
