@@ -51,31 +51,41 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
 
-      - name: Generate contributor graph SVG
+      - name: Sync with remote and generate SVG
         run: |
-          pwd
+          # 强制与远程保持一致，丢弃本地可能的旧修改
+          git fetch origin main
+          git reset --hard origin/main
+
+          # 生成 contributor graph
           docker run --rm \
             -v "$PWD:/work" \
             -w /work \
             -e GITHUB_TOKEN=${{ secrets.METRICS_TOKEN }} \
             ghcr.io/ewels/contributor-graphs adofaiex --sort commits 2>&1 | tee output.log
 
-      - name: List all files
+      - name: List files (optional)
         run: |
           ls -la
           find . -name "*.svg" -type f
-          cat output.log || echo "No log file"
 
-      - name: Commit and push if files exist
+      - name: Commit and push if changed
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git pull --rebase origin main || true
-          if [ -f "adofaiex.svg" ]; then
-            git add adofaiex.svg adofaiex.html
-            git commit -m "📊 update contributor graph [skip ci]" || echo "No changes"
-            git push
-          else
+
+          if [ ! -f "adofaiex.svg" ]; then
             echo "SVG file not found, skipping commit"
             exit 1
           fi
+
+          git add adofaiex.svg adofaiex.html
+
+          # 检查是否有实际变更
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git commit -m "📊 update contributor graph [skip ci]"
+          git push
