@@ -73,19 +73,24 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-
+      
           if [ ! -f "adofaiex.svg" ]; then
             echo "SVG file not found, skipping commit"
             exit 1
           fi
-
+      
           git add adofaiex.svg adofaiex.html
-
+      
           # 检查是否有实际变更
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
           fi
-
+      
           git commit -m "📊 update contributor graph [skip ci]"
-          git push
+      
+          # 关键修复：拉取远程最新变更并变基（避免非快进冲突）
+          git pull --rebase origin main
+      
+          # 推送（此时变基后可以快进）
+          git push origin main
