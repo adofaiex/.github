@@ -39,7 +39,7 @@ jobs:
           plugin_languages_limit: 6
           plugin_languages_threshold: 0%
           plugin_lines: yes
-          plugin_lines_sections: base
+          plugin_lines_sections: history, repositories
           plugin_followup: yes
           # 如需组织 Projects 看板，取消下面三行注释并填好项目
           # plugin_projects: yes
