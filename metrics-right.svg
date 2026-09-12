@@ -123,12 +123,12 @@
                         <rect x="0" y="0" width="460" height="8" fill="white" rx="5"/>
                     </mask>
                     <rect mask="url(#languages-bar)" x="0" y="0" width="0" height="8" fill="#d1d5da"/>
-                    <rect mask="url(#languages-bar)" x="0" y="0" width="234.27382670024917" height="8" fill="#7355dd"/>
-                    <rect mask="url(#languages-bar)" x="234.27382670024917" y="0" width="153.34773838879602" height="8" fill="#e34c26"/>
-                    <rect mask="url(#languages-bar)" x="387.6215650890452" y="0" width="37.29885251654467" height="8" fill="#3178c6"/>
-                    <rect mask="url(#languages-bar)" x="424.9204176055899" y="0" width="32.86132433706221" height="8" fill="#41b883"/>
-                    <rect mask="url(#languages-bar)" x="457.78174194265205" y="0" width="1.556497809524064" height="8" fill="#663399"/>
-                    <rect mask="url(#languages-bar)" x="459.3382397521761" y="0" width="0.6617602478238642" height="8" fill="#f1e05a"/>
+                    <rect mask="url(#languages-bar)" x="0" y="0" width="235.1746619526301" height="8" fill="#7355dd"/>
+                    <rect mask="url(#languages-bar)" x="235.1746619526301" y="0" width="152.14377285559272" height="8" fill="#e34c26"/>
+                    <rect mask="url(#languages-bar)" x="387.31843480822283" y="0" width="37.006011335254485" height="8" fill="#3178c6"/>
+                    <rect mask="url(#languages-bar)" x="424.32444614347736" y="0" width="32.60332312822189" height="8" fill="#41b883"/>
+                    <rect mask="url(#languages-bar)" x="456.9277692716992" y="0" width="1.5442774159606312" height="8" fill="#663399"/>
+                    <rect mask="url(#languages-bar)" x="458.4720466876599" y="0" width="1.527953312340181" height="8" fill="#012456"/>
                 </svg>
                 <div class="field center horizontal-wrap fill-width">
                     <div class="field center no-wrap language">
@@ -163,9 +163,9 @@
                     </div>
                     <div class="field center no-wrap language">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
-                            <path fill="#f1e05a" fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"/>
+                            <path fill="#012456" fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8z"/>
                         </svg>
-                        JavaScript
+                        PowerShell
                     </div>
                 </div>
             </section>
