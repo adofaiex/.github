@@ -5,6 +5,7 @@ Some interesting repositories about ADOFAI will appear here, including but not l
 
 This is a very casual organization, with no organizational rules.
 
+Join us by contacting support@modrift.org or xbodwf@gmail.com (DM in Discord is OK)
 <table width="100%">
   <tr>
     <td align="center" valign="top" width="50%">
