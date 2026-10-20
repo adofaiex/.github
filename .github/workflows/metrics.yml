@@ -2,13 +2,23 @@ name: Generate Metrics & Contributor Graph
 
 on:
   schedule:
-    - cron: '0 0 * * *'          # 每天 UTC 0 点运行
-  workflow_dispatch:              # 允许手动触发
+    - cron: '0 0 * * *'
+  workflow_dispatch:
   push:
     branches: ["main"]
+    paths-ignore:                      # 图表文件更新不触发本 workflow，切断自触发链
+      - 'metrics-left.svg'
+      - 'metrics-right.svg'
+      - 'adofaiex.svg'
+      - 'adofaiex.html'
 
 permissions:
-  contents: write                 # 允许提交到仓库
+  contents: write
+
+# ★ 核心：全局串行，同一时间只允许一个 run 操作 main
+concurrency:
+  group: metrics-and-contributor-graph
+  cancel-in-progress: false
 
 jobs:
   metrics:
@@ -39,56 +49,60 @@ jobs:
           plugin_languages_limit: 6
           plugin_languages_threshold: 0%
           plugin_followup: yes
-          # 如需组织 Projects 看板，取消下面三行注释并填好项目
-          # plugin_projects: yes
-          # plugin_projects_repositories: adofaiex/xxx/projects/1
 
   contributor-graph:
+    needs: metrics                    # ★ 关键：等 metrics 全部 push 完再开始
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0              # rebase 需要完整历史
 
       - name: Sync with remote and generate SVG
         run: |
-          # 强制与远程保持一致，丢弃本地可能的旧修改
           git fetch origin main
           git reset --hard origin/main
-
-          # 生成 contributor graph
           docker run --rm \
             -v "$PWD:/work" \
             -w /work \
             -e GITHUB_TOKEN=${{ secrets.METRICS_TOKEN }} \
             ghcr.io/ewels/contributor-graphs adofaiex --sort commits 2>&1 | tee output.log
 
-      - name: List files (optional)
+      - name: List files
         run: |
           ls -la
           find . -name "*.svg" -type f
 
-      - name: Commit and push if changed
+      - name: Commit and push if changed (with retry)
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-      
+
           if [ ! -f "adofaiex.svg" ]; then
             echo "SVG file not found, skipping commit"
             exit 1
           fi
-      
+
           git add adofaiex.svg adofaiex.html
-      
-          # 检查是否有实际变更
+
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
           fi
-      
+
           git commit -m "📊 update contributor graph [skip ci]"
-      
-          # 关键修复：拉取远程最新变更并变基（避免非快进冲突）
-          git pull --rebase origin main
-      
-          # 推送（此时变基后可以快进）
-          git push origin main
+
+          # ★ 重试兜底：即使有未知并发，也能最终 push 成功
+          for i in 1 2 3 4 5; do
+            if git push origin main; then
+              echo "Push succeeded"
+              exit 0
+            fi
+            echo "Push rejected, retry $i/5..."
+            git pull --rebase origin main || git rebase --abort
+            sleep $((i * 3))
+          done
+
+          echo "Push failed after retries"
+          exit 1
